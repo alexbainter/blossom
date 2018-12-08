@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { render } from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
+import { merge } from 'rxjs';
+import { takeUntil, startWith } from 'rxjs/operators';
 import Circle from './circle/circle.component.jsx';
 import generation$ from '../core/input/generation.source';
-import makeClickSource from '../core/input/make-click-source';
+import makeInputSource from '../core/input/make-input-source';
 import feedbackDelay from '../core/operators/feedback-delay.operator';
 import WithPlayer from '../with-player.component.jsx';
 import colored from '../core/operators/colored.operator';
@@ -20,11 +22,16 @@ const Canvas = ({ player }) => {
   const container = useRef(null);
   useEffect(
     () => {
-      //const clicks$ = makeClickSource(container.current);
-      const inputSubscription = generation$
+      const input$ = makeInputSource(container.current);
+      const inputWithGeneration$ = merge(
+        input$,
+        generation$.pipe(takeUntil(input$))
+      );
+      const inputSubscription = inputWithGeneration$
         .pipe(
           colored(),
-          feedbackDelay(Math.random() * 7000 + 5000)
+          feedbackDelay(Math.random() * 7000 + 5000),
+          startWith({ xPct: 50, yPct: 50, velocity: 1, color: 'black' })
         )
         .subscribe(coordinate => {
           coordinatesRef.current.push(
@@ -48,7 +55,11 @@ const Canvas = ({ player }) => {
     forceRender();
   };
   return (
-    <div style={{ height: '100%' }} ref={container}>
+    <div
+      style={{ height: '100%' }}
+      ref={container}
+      onTouchEnd={e => e.preventDefault()}
+    >
       <TransitionGroup style={{ height: '100%' }}>
         {coordinatesRef.current.map(c => (
           <CSSTransition

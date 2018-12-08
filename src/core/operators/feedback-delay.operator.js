@@ -2,7 +2,7 @@ import { EMPTY, timer } from 'rxjs';
 import { map, expand, filter } from 'rxjs/operators';
 
 const MAX_NOTE_COUNT = 20;
-const MAX_DELAY_FUDGE_MS = 250;
+const MAX_DELAY_FUDGE_MS = 500;
 
 const feedbackDelay = baseDelay => source => {
   let maxCount = 0;
