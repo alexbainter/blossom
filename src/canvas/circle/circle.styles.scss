@@ -1,0 +1,13 @@
+.circle-enter {
+  width: 0px;
+  height: 0px;
+  border-radius: 50%;
+  position: fixed;
+  transition: all 6s linear;
+}
+
+.circle-enter-active {
+  width: 500px;
+  height: 500px;
+  opacity: 0;
+}

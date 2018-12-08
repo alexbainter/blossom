@@ -1,0 +1,27 @@
+{
+  "vsco2-piano-reverb": {
+    "A0": "./samples/vsco2-piano-reverb/a0.wav",
+    "C#1": "./samples/vsco2-piano-reverb/csharp1.wav",
+    "F1": "./samples/vsco2-piano-reverb/f1.wav",
+    "A1": "./samples/vsco2-piano-reverb/a1.wav",
+    "C#2": "./samples/vsco2-piano-reverb/csharp2.wav",
+    "F2": "./samples/vsco2-piano-reverb/f2.wav",
+    "A2": "./samples/vsco2-piano-reverb/a2.wav",
+    "C#3": "./samples/vsco2-piano-reverb/csharp3.wav",
+    "F3": "./samples/vsco2-piano-reverb/f3.wav",
+    "A3": "./samples/vsco2-piano-reverb/a3.wav",
+    "C#4": "./samples/vsco2-piano-reverb/csharp4.wav",
+    "F4": "./samples/vsco2-piano-reverb/f4.wav",
+    "A4": "./samples/vsco2-piano-reverb/a4.wav",
+    "C#5": "./samples/vsco2-piano-reverb/csharp5.wav",
+    "F5": "./samples/vsco2-piano-reverb/f5.wav",
+    "A5": "./samples/vsco2-piano-reverb/a5.wav",
+    "C#6": "./samples/vsco2-piano-reverb/csharp6.wav",
+    "F6": "./samples/vsco2-piano-reverb/f6.wav",
+    "A6": "./samples/vsco2-piano-reverb/a6.wav",
+    "C#7": "./samples/vsco2-piano-reverb/csharp7.wav",
+    "F7": "./samples/vsco2-piano-reverb/f7.wav",
+    "A7": "./samples/vsco2-piano-reverb/a7.wav",
+    "C8": "./samples/vsco2-piano-reverb/c8.wav"
+  }
+}
