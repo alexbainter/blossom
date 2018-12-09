@@ -1,7 +1,7 @@
 import React from 'react';
 import './circle.styles.scss';
 
-const Circle = ({ xPct, yPct, color, opacity }) => (
+const Circle = ({ xPct, yPct, color = 'coral', opacity }) => (
   <div
     className="circle"
     style={{

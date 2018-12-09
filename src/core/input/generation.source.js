@@ -7,6 +7,7 @@ const MAX_DELAY_MS = 20000;
 const randomNote = () => ({
   xPct: normalToPct(Math.random()),
   yPct: normalToPct(Math.random()),
+  velocity: 1,
 });
 
 const getDelay = () => Math.random() * MAX_DELAY_MS;

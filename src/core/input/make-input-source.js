@@ -1,10 +1,11 @@
 import { fromEvent, merge } from 'rxjs';
-import { map, mergeMap, tap } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import normalToPct from '../../normal-to-pct.js';
 
 const mapInputToCoordinate = (containerEl, coordinateInput) => ({
   xPct: normalToPct(coordinateInput.clientX / containerEl.clientWidth),
   yPct: normalToPct(coordinateInput.clientY / containerEl.clientHeight),
+  velocity: 1,
 });
 
 const makeClickSource = el =>
@@ -14,22 +15,7 @@ const makeClickSource = el =>
 
 const makeTouchSource = el =>
   fromEvent(el, 'touchstart').pipe(
-    tap(() => console.log('touched')),
-    mergeMap(({ touches }) =>
-      Array.from(touches).reduce(
-        (distinctTouches, touch) =>
-          distinctTouches.concat(
-            distinctTouches.some(
-              ({ clientX, clientY }) =>
-                touch.clientX === clientX && touch.clientY === clientY
-            )
-              ? []
-              : [touch]
-          ),
-        []
-      )
-    ),
-    tap(arr => console.log(arr.clientX, arr.clientY)),
+    mergeMap(({ changedTouches }) => Array.from(changedTouches)),
     map(touchEvent => mapInputToCoordinate(el, touchEvent))
   );
 

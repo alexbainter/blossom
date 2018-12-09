@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { render } from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
-import { merge } from 'rxjs';
-import { takeUntil, startWith } from 'rxjs/operators';
+import { merge, fromEvent } from 'rxjs';
+import { takeUntil, startWith, tap, mergeMap, map } from 'rxjs/operators';
 import Circle from './circle/circle.component.jsx';
 import generation$ from '../core/input/generation.source';
 import makeInputSource from '../core/input/make-input-source';
@@ -15,6 +15,8 @@ const useForceRender = () => {
   const [state, setState] = useState();
   return () => setState(state);
 };
+
+const preventDefault = event => event.preventDefault();
 
 const Canvas = ({ player }) => {
   const forceRender = useForceRender();
@@ -30,10 +32,10 @@ const Canvas = ({ player }) => {
       const inputSubscription = inputWithGeneration$
         .pipe(
           colored(),
-          feedbackDelay(Math.random() * 7000 + 5000),
-          startWith({ xPct: 50, yPct: 50, velocity: 1, color: 'black' })
+          feedbackDelay(Math.random() * 7000 + 5000)
         )
         .subscribe(coordinate => {
+          console.log(coordinate.velocity);
           coordinatesRef.current.push(
             Object.assign({}, coordinate, { id: uuid() })
           );
@@ -55,11 +57,7 @@ const Canvas = ({ player }) => {
     forceRender();
   };
   return (
-    <div
-      style={{ height: '100%' }}
-      ref={container}
-      onTouchEnd={e => e.preventDefault()}
-    >
+    <div style={{ height: '100%' }} ref={container} onTouchEnd={preventDefault}>
       <TransitionGroup style={{ height: '100%' }}>
         {coordinatesRef.current.map(c => (
           <CSSTransition
