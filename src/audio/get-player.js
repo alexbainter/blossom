@@ -2,7 +2,7 @@ import { now } from 'tone';
 import { Scale } from 'tonal';
 import getInstrument from './get-instrument';
 
-const tonicPc = 'C';
+const tonicPc = 'D';
 const octaves = [2, 3, 4, 5, 6];
 const notes = octaves.reduce(
   (allNotes, octave) =>

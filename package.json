@@ -35,6 +35,7 @@
     "react-transition-group": "^2.5.0",
     "rxjs": "^6.3.3",
     "shuffle-array": "^1.0.1",
+    "startaudiocontext": "^1.2.1",
     "tonal": "^2.1.2",
     "tone": "^0.12.80",
     "uuid": "^3.3.2"

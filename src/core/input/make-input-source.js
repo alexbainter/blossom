@@ -1,5 +1,7 @@
 import { fromEvent, merge } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
+import startAudioContext from 'startaudiocontext';
+import { context } from 'tone';
 import normalToPct from '../../normal-to-pct.js';
 
 const mapInputToCoordinate = (containerEl, coordinateInput) => ({
@@ -19,6 +21,9 @@ const makeTouchSource = el =>
     map(touchEvent => mapInputToCoordinate(el, touchEvent))
   );
 
-const makeInputSource = el => merge(makeClickSource(el), makeTouchSource(el));
+const makeInputSource = el => {
+  startAudioContext(context, el);
+  return merge(makeClickSource(el), makeTouchSource(el));
+};
 
 export default makeInputSource;

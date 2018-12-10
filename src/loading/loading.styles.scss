@@ -1,11 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Merriweather:300i');
+@import '../_mixins.scss';
 
 .loading-message {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Merriweather', serif;
-  font-size: 1.5em;
+  @include centered-message();
 }

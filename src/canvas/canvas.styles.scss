@@ -1,0 +1,10 @@
+@import '../_mixins.scss';
+
+.initializer {
+  @include centered-message();
+  position: fixed;
+}
+
+.canvas {
+  height: 100%;
+}

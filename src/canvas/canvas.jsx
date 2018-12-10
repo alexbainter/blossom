@@ -10,34 +10,36 @@ import makeInputSource from '../core/input/make-input-source';
 import feedbackDelay from '../core/operators/feedback-delay.operator';
 import WithPlayer from '../with-player.component.jsx';
 import colored from '../core/operators/colored.operator';
+import './canvas.styles.scss';
 
 const useForceRender = () => {
   const [state, setState] = useState();
   return () => setState(state);
 };
 
-const preventDefault = event => event.preventDefault();
-
 const Canvas = ({ player }) => {
   const forceRender = useForceRender();
   const coordinatesRef = useRef([]);
   const container = useRef(null);
+  const initializer = useRef(null);
+  const circleDisplay = useRef(null);
+  const [isInitialized, setInitialized] = useState(false);
   useEffect(
     () => {
+      container.current.ontouchend = event.preventDefault();
       const input$ = makeInputSource(container.current);
-      const inputWithGeneration$ = merge(
-        input$,
-        generation$.pipe(takeUntil(input$))
-      );
-      const inputSubscription = inputWithGeneration$
+      const delay = Math.random() * 5000 + 7000;
+      const inputSubscription = input$
         .pipe(
           colored(),
-          feedbackDelay(Math.random() * 7000 + 5000)
+          feedbackDelay(delay)
         )
         .subscribe(coordinate => {
-          console.log(coordinate.velocity);
+          if (!isInitialized) {
+            setInitialized(true);
+          }
           coordinatesRef.current.push(
-            Object.assign({}, coordinate, { id: uuid() })
+            Object.assign({}, coordinate, { id: uuid(), delay })
           );
           player(coordinate);
           forceRender();
@@ -49,6 +51,18 @@ const Canvas = ({ player }) => {
     [container]
   );
 
+  const touchendRefs = [initializer, container, circleDisplay];
+
+  useEffect(() => {
+    touchendRefs.forEach(ref => {
+      if (ref.current) {
+        ref.current.ontouchend = () => {
+          event.preventDefault();
+        };
+      }
+    });
+  }, touchendRefs);
+
   const removeCircle = ({ id }) => {
     coordinatesRef.current.splice(
       coordinatesRef.current.findIndex(c => c.id === id),
@@ -56,32 +70,39 @@ const Canvas = ({ player }) => {
     );
     forceRender();
   };
+  const contents = isInitialized ? (
+    <TransitionGroup ref={circleDisplay}>
+      {coordinatesRef.current.map(c => (
+        <CSSTransition
+          timeout={{ enter: 7100, exit: 0 }}
+          onEntering={el =>
+            Object.assign(el.style, {
+              left: `calc(${c.xPct}% - 250px)`,
+              top: `calc(${c.yPct}% - 250px)`,
+              opacity: 0,
+            })
+          }
+          onEntered={() => removeCircle(c)}
+          classNames="circle"
+          key={c.id}
+        >
+          <Circle
+            xPct={c.xPct}
+            yPct={c.yPct}
+            opacity={c.velocity}
+            color={c.color}
+          />
+        </CSSTransition>
+      ))}
+    </TransitionGroup>
+  ) : (
+    <div className="initializer" ref={initializer}>
+      Press anywhere
+    </div>
+  );
   return (
-    <div style={{ height: '100%' }} ref={container} onTouchEnd={preventDefault}>
-      <TransitionGroup style={{ height: '100%' }}>
-        {coordinatesRef.current.map(c => (
-          <CSSTransition
-            timeout={{ enter: 6100, exit: 0 }}
-            onEntering={el =>
-              Object.assign(el.style, {
-                left: `calc(${c.xPct}% - 250px)`,
-                top: `calc(${c.yPct}% - 250px)`,
-                opacity: 0,
-              })
-            }
-            onEntered={() => removeCircle(c)}
-            classNames="circle"
-            key={c.id}
-          >
-            <Circle
-              xPct={c.xPct}
-              yPct={c.yPct}
-              opacity={c.velocity}
-              color={c.color}
-            />
-          </CSSTransition>
-        ))}
-      </TransitionGroup>
+    <div className="canvas" ref={container}>
+      {contents}
     </div>
   );
 };
