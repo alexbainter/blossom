@@ -2,8 +2,8 @@ import { EMPTY, timer } from 'rxjs';
 import { map, expand, filter } from 'rxjs/operators';
 
 const MAX_NOTE_COUNT = 15;
-const MAX_DELAY_FUDGE_MS = 250;
 const MAX_PLAYS_COUNT = 15;
+const MAX_FUDGE_PER_PLAY = 250;
 
 const noteCountVelocity = (maxCount, count) =>
   (MAX_NOTE_COUNT - (maxCount - count)) / MAX_NOTE_COUNT;
@@ -20,7 +20,7 @@ const feedbackDelay = baseDelay => source => {
     }),
     expand(([o, count, plays]) =>
       maxCount <= MAX_NOTE_COUNT || count > maxCount - MAX_NOTE_COUNT
-        ? timer(baseDelay + Math.random() * MAX_DELAY_FUDGE_MS).pipe(
+        ? timer(baseDelay + plays * Math.random() * MAX_FUDGE_PER_PLAY).pipe(
             map(() => [
               Object.assign(o, {
                 velocity:

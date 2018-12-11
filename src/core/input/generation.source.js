@@ -10,7 +10,14 @@ const randomNote = () => ({
   velocity: 1,
 });
 
-const getDelay = () => Math.random() * MAX_DELAY_MS;
+let callCounter = 0;
+const getDelay = () => {
+  if (callCounter < 2) {
+    callCounter += 1;
+    return 500;
+  }
+  return Math.random() * MAX_DELAY_MS;
+};
 
 const generation$ = of(null).pipe(
   concatMap(() => of(randomNote()).pipe(delay(getDelay()))),

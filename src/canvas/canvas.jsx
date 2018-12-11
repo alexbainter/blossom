@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { render } from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
-import { merge, fromEvent } from 'rxjs';
-import { takeUntil, startWith, tap, mergeMap, map } from 'rxjs/operators';
+import NoSleep from 'nosleep.js';
 import Circle from './circle/circle.component.jsx';
 import generation$ from '../core/input/generation.source';
 import makeInputSource from '../core/input/make-input-source';
@@ -17,6 +16,14 @@ const useForceRender = () => {
   return () => setState(state);
 };
 
+const useNoSleep = () => {
+  const noSleepRef = useRef(new NoSleep());
+  return [
+    () => noSleepRef.current.enable(),
+    () => noSleepRef.current.disable(),
+  ];
+};
+
 const Canvas = ({ player }) => {
   const forceRender = useForceRender();
   const coordinatesRef = useRef([]);
@@ -24,6 +31,8 @@ const Canvas = ({ player }) => {
   const initializer = useRef(null);
   const circleDisplay = useRef(null);
   const [isInitialized, setInitialized] = useState(false);
+  const [enableNoSleep, disableNoSleep] = useNoSleep();
+
   useEffect(
     () => {
       container.current.ontouchend = event.preventDefault();
@@ -36,6 +45,7 @@ const Canvas = ({ player }) => {
         )
         .subscribe(coordinate => {
           if (!isInitialized) {
+            enableNoSleep();
             setInitialized(true);
           }
           coordinatesRef.current.push(

@@ -1,31 +1,21 @@
-import shuffleArray from 'shuffle-array';
 import { merge, of } from 'rxjs';
-import {
-  debounceTime,
-  map,
-  take,
-  mergeMap,
-  withLatestFrom,
-  tap,
-  startWith,
-} from 'rxjs/operators';
+import { debounceTime, map, withLatestFrom } from 'rxjs/operators';
+import materialColors from 'material-colors';
+import makeRandomLoopGenerator from '../../make-random-loop-generator';
 
-const COLORS = ['#EDC9FF', '#FED4E7', '#F2B79F', '#E5B769', '#D8CC34'];
+const bannedColors = ['white', 'black', 'yellow'];
+const bannedSuffixes = ['Text', 'Icons'];
+const colorKeys = Reflect.ownKeys(materialColors).filter(
+  name =>
+    !bannedColors.includes(name) &&
+    bannedSuffixes.every(suffix => !name.endsWith(suffix))
+);
+
+const colors = colorKeys.map(key => materialColors[key][300]);
 const COLOR_DEBOUNCE_TIME_MS = 3000;
 
-function* makeRandomLoopGenerator(arr) {
-  const shuffledArr = shuffleArray(arr);
-  for (
-    let i = 0;
-    i < shuffledArr.length;
-    i + 1 === shuffledArr.length - 1 ? (i = 0) : (i += 1)
-  ) {
-    yield shuffledArr[i];
-  }
-}
-
 const colored = () => source => {
-  const colorGenerator = makeRandomLoopGenerator(COLORS);
+  const colorGenerator = makeRandomLoopGenerator(colors);
   const debouncedColors$ = merge(
     of(colorGenerator.next().value),
     source.pipe(
