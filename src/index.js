@@ -1,4 +1,4 @@
-import './canvas/canvas.jsx';
+import './canvas/canvas.component.jsx';
 import './base-styles.scss';
 
 // import { fromEvent } from 'rxjs';

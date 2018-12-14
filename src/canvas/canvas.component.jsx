@@ -3,6 +3,9 @@ import { render } from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
 import NoSleep from 'nosleep.js';
+import { merge } from 'rxjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlayCircle, faStopCircle } from '@fortawesome/free-solid-svg-icons';
 import Circle from './circle/circle.component.jsx';
 import generation$ from '../core/input/generation.source';
 import makeInputSource from '../core/input/make-input-source';
@@ -29,14 +32,22 @@ const Canvas = ({ player }) => {
   const coordinatesRef = useRef([]);
   const container = useRef(null);
   const initializer = useRef(null);
-  const circleDisplay = useRef(null);
   const [isInitialized, setInitialized] = useState(false);
-  const [enableNoSleep, disableNoSleep] = useNoSleep();
+  const [enableNoSleep] = useNoSleep();
+  const [generate, setGenerate] = useState(false);
+  const generationToggleButton = useRef(null);
+
+  const toggleGeneration = () => {
+    setGenerate(!generate);
+  };
 
   useEffect(
     () => {
       container.current.ontouchend = event.preventDefault();
-      const input$ = makeInputSource(container.current);
+      let input$ = makeInputSource(container.current);
+      if (generate) {
+        input$ = merge(input$, generation$);
+      }
       const delay = Math.random() * 5000 + 7000;
       const inputSubscription = input$
         .pipe(
@@ -58,20 +69,29 @@ const Canvas = ({ player }) => {
         inputSubscription.unsubscribe();
       };
     },
-    [container]
+    [container, generate]
   );
 
-  const touchendRefs = [initializer, container, circleDisplay];
+  useEffect(() => {
+    if (generationToggleButton.current) {
+      generationToggleButton.current.onclick = event => {
+        event.stopPropagation();
+        toggleGeneration();
+      };
+    }
+  });
+
+  const touchableRefs = [initializer, container];
 
   useEffect(() => {
-    touchendRefs.forEach(ref => {
+    touchableRefs.forEach(ref => {
       if (ref.current) {
         ref.current.ontouchend = () => {
           event.preventDefault();
         };
       }
     });
-  }, touchendRefs);
+  }, touchableRefs);
 
   const removeCircle = ({ id }) => {
     coordinatesRef.current.splice(
@@ -81,30 +101,38 @@ const Canvas = ({ player }) => {
     forceRender();
   };
   const contents = isInitialized ? (
-    <TransitionGroup ref={circleDisplay}>
-      {coordinatesRef.current.map(c => (
-        <CSSTransition
-          timeout={{ enter: 7100, exit: 0 }}
-          onEntering={el =>
-            Object.assign(el.style, {
-              left: `calc(${c.xPct}% - 250px)`,
-              top: `calc(${c.yPct}% - 250px)`,
-              opacity: 0,
-            })
-          }
-          onEntered={() => removeCircle(c)}
-          classNames="circle"
-          key={c.id}
-        >
-          <Circle
-            xPct={c.xPct}
-            yPct={c.yPct}
-            opacity={c.velocity}
-            color={c.color}
-          />
-        </CSSTransition>
-      ))}
-    </TransitionGroup>
+    <div>
+      <TransitionGroup>
+        {coordinatesRef.current.map(c => (
+          <CSSTransition
+            timeout={{ enter: 7100, exit: 0 }}
+            onEntering={el =>
+              Object.assign(el.style, {
+                left: `calc(${c.xPct}% - 250px)`,
+                top: `calc(${c.yPct}% - 250px)`,
+                opacity: 0,
+              })
+            }
+            onEntered={() => removeCircle(c)}
+            classNames="circle"
+            key={c.id}
+          >
+            <Circle
+              xPct={c.xPct}
+              yPct={c.yPct}
+              opacity={c.velocity}
+              color={c.color}
+            />
+          </CSSTransition>
+        ))}
+      </TransitionGroup>
+      <button className="generation-toggle-btn" ref={generationToggleButton}>
+        <FontAwesomeIcon
+          icon={generate ? faStopCircle : faPlayCircle}
+          size="lg"
+        />
+      </button>
+    </div>
   ) : (
     <div className="initializer" ref={initializer}>
       Press anywhere

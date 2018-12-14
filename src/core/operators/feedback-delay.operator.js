@@ -3,12 +3,12 @@ import { map, expand, filter } from 'rxjs/operators';
 
 const MAX_NOTE_COUNT = 15;
 const MAX_PLAYS_COUNT = 15;
-const MAX_FUDGE_PER_PLAY = 250;
+const MAX_FUDGE_PER_PLAY_MS = 250;
 
 const noteCountVelocity = (maxCount, count) =>
   (MAX_NOTE_COUNT - (maxCount - count)) / MAX_NOTE_COUNT;
 const notePlaysVelocity = plays =>
-  Math.max((MAX_PLAYS_COUNT - plays + 1) / MAX_PLAYS_COUNT, 0);
+  (MAX_PLAYS_COUNT - plays + 1) / MAX_PLAYS_COUNT;
 
 const feedbackDelay = baseDelay => source => {
   let maxCount = 0;
@@ -20,7 +20,9 @@ const feedbackDelay = baseDelay => source => {
     }),
     expand(([o, count, plays]) =>
       maxCount <= MAX_NOTE_COUNT || count > maxCount - MAX_NOTE_COUNT
-        ? timer(baseDelay + plays * Math.random() * MAX_FUDGE_PER_PLAY).pipe(
+        ? timer(
+            baseDelay + (plays - 1) * Math.random() * MAX_FUDGE_PER_PLAY_MS
+          ).pipe(
             map(() => [
               Object.assign(o, {
                 velocity:

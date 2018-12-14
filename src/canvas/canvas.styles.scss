@@ -7,4 +7,22 @@
 
 .canvas {
   height: 100%;
+  text-align: center;
+}
+
+.generation-toggle-btn {
+  margin: auto;
+  position: fixed;
+  bottom: 1em;
+  background-color: transparent;
+  font-size: 2em;
+  border: none;
+  cursor: pointer;
+  opacity: 0.2;
+  &:hover {
+    opacity: 1;
+  }
+  &:focus {
+    outline: none;
+  }
 }
