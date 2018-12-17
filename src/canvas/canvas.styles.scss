@@ -1,4 +1,5 @@
 @import '../_mixins.scss';
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
 
 .initializer {
   @include centered-message();
@@ -13,16 +14,42 @@
 .generation-toggle-btn {
   margin: auto;
   position: fixed;
-  bottom: 1em;
+  bottom: 10px;
   background-color: transparent;
   font-size: 2em;
   border: none;
   cursor: pointer;
   opacity: 0.2;
+  transform: translate(-50%);
   &:hover {
     opacity: 1;
   }
   &:focus {
     outline: none;
+  }
+}
+
+.alex-bainter-link {
+  opacity: 0.35;
+  position: absolute;
+  bottom: 5px;
+  right: 7px;
+  margin: auto;
+  user-select: none;
+  text-decoration: none;
+  font-family: 'Open Sans', sans-serif;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:visited {
+    color: inherit;
+  }
+}
+
+@media (max-width: 600px) {
+  .alex-bainter-link {
+    font-size: 0.75em;
   }
 }

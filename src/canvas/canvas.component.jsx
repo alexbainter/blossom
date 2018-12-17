@@ -12,6 +12,7 @@ import makeInputSource from '../core/input/make-input-source';
 import feedbackDelay from '../core/operators/feedback-delay.operator';
 import WithPlayer from '../with-player.component.jsx';
 import colored from '../core/operators/colored.operator';
+import startAudioContext from '../audio/start-audio-context';
 import './canvas.styles.scss';
 
 const useForceRender = () => {
@@ -36,6 +37,7 @@ const Canvas = ({ player }) => {
   const [enableNoSleep] = useNoSleep();
   const [generate, setGenerate] = useState(false);
   const generationToggleButton = useRef(null);
+  const alexBainterLink = useRef(null);
 
   const toggleGeneration = () => {
     setGenerate(!generate);
@@ -56,6 +58,7 @@ const Canvas = ({ player }) => {
         )
         .subscribe(coordinate => {
           if (!isInitialized) {
+            startAudioContext();
             enableNoSleep();
             setInitialized(true);
           }
@@ -72,11 +75,19 @@ const Canvas = ({ player }) => {
     [container, generate]
   );
 
+  const handleButtonEvent = event => {
+    event.stopPropagation();
+    toggleGeneration();
+  };
+
   useEffect(() => {
     if (generationToggleButton.current) {
-      generationToggleButton.current.onclick = event => {
+      generationToggleButton.current.onclick = handleButtonEvent;
+      generationToggleButton.current.ontouchstart = handleButtonEvent;
+    }
+    if (alexBainterLink.current) {
+      alexBainterLink.current.ontouchend = event => {
         event.stopPropagation();
-        toggleGeneration();
       };
     }
   });
@@ -132,6 +143,13 @@ const Canvas = ({ player }) => {
           size="lg"
         />
       </button>
+      <a
+        href="https://alexbainter.com"
+        className="alex-bainter-link"
+        ref={alexBainterLink}
+      >
+        made by alex bainter
+      </a>
     </div>
   ) : (
     <div className="initializer" ref={initializer}>
