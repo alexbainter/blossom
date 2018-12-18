@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { render } from 'react-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
 import NoSleep from 'nosleep.js';
@@ -10,10 +9,12 @@ import Circle from './circle/circle.component.jsx';
 import generation$ from '../core/input/generation.source';
 import makeInputSource from '../core/input/make-input-source';
 import feedbackDelay from '../core/operators/feedback-delay.operator';
-import WithPlayer from '../with-player.component.jsx';
 import colored from '../core/operators/colored.operator';
 import startAudioContext from '../audio/start-audio-context';
 import './canvas.styles.scss';
+
+const MIN_DELAY_MS = 7000;
+const MAX_EXTRA_DELAY_MS = 5000;
 
 const useForceRender = () => {
   const [state, setState] = useState();
@@ -50,7 +51,7 @@ const Canvas = ({ player }) => {
       if (generate) {
         input$ = merge(input$, generation$);
       }
-      const delay = Math.random() * 5000 + 7000;
+      const delay = Math.random() * MAX_EXTRA_DELAY_MS + MIN_DELAY_MS;
       const inputSubscription = input$
         .pipe(
           colored(),
@@ -163,4 +164,4 @@ const Canvas = ({ player }) => {
   );
 };
 
-render(<WithPlayer Component={Canvas} />, document.getElementById('root'));
+export default Canvas;

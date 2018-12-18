@@ -5,10 +5,12 @@ const MAX_NOTE_COUNT = 15;
 const MAX_PLAYS_COUNT = 15;
 const MAX_FUDGE_PER_PLAY_MS = 250;
 
-const noteCountVelocity = (maxCount, count) =>
+const noteCountVelocity = ({ maxCount, count }) =>
   (MAX_NOTE_COUNT - (maxCount - count)) / MAX_NOTE_COUNT;
-const notePlaysVelocity = plays =>
+const notePlaysVelocity = ({ plays }) =>
   (MAX_PLAYS_COUNT - plays + 1) / MAX_PLAYS_COUNT;
+
+const velocityFns = [noteCountVelocity, notePlaysVelocity];
 
 const feedbackDelay = baseDelay => source => {
   let maxCount = 0;
@@ -26,9 +28,10 @@ const feedbackDelay = baseDelay => source => {
             map(() => [
               Object.assign(o, {
                 velocity:
-                  (noteCountVelocity(maxCount, count) +
-                    notePlaysVelocity(plays)) /
-                  2,
+                  velocityFns.reduce(
+                    (velocity, fn) => velocity + fn({ maxCount, count, plays }),
+                    0
+                  ) / velocityFns.length,
               }),
               count,
               plays + 1,
