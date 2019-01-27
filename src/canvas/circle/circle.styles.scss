@@ -1,13 +1,15 @@
 .circle-enter {
-  width: 1px;
-  height: 1px;
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
   position: fixed;
-  transition: all 7s linear;
+  transform: scale(0);
+  transition: transform 7s linear, opacity 7s linear;
   will-change: transform, opacity;
+  overflow: visible;
 }
 
 .circle-enter-active {
-  transform: scale(500);
+  transform: scale(1);
   opacity: 0;
 }

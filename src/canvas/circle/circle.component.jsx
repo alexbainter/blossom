@@ -6,8 +6,8 @@ const Circle = ({ xPct, yPct, color, opacity }) => (
     className="circle"
     style={{
       backgroundColor: color,
-      left: `${xPct}%`,
-      top: `${yPct}%`,
+      left: `calc(${xPct}% - 250px)`,
+      top: `calc(${yPct}% - 250px)`,
       opacity: opacity,
     }}
   />
