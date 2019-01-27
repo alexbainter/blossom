@@ -120,8 +120,6 @@ const Canvas = ({ player }) => {
             timeout={{ enter: 7100, exit: 0 }}
             onEntering={el =>
               Object.assign(el.style, {
-                left: `calc(${c.xPct}% - 250px)`,
-                top: `calc(${c.yPct}% - 250px)`,
                 opacity: 0,
               })
             }
