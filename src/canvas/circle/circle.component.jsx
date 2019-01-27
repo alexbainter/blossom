@@ -9,7 +9,6 @@ const Circle = ({ xPct, yPct, color, opacity }) => (
       left: `${xPct}%`,
       top: `${yPct}%`,
       opacity: opacity,
-      color: color,
     }}
   />
 );
