@@ -15,6 +15,7 @@ import './canvas.styles.scss';
 
 const MIN_DELAY_MS = 7000;
 const MAX_EXTRA_DELAY_MS = 5000;
+const MAX_CIRCLE_RADIUS_PX = 250;
 
 const useForceRender = () => {
   const [state, setState] = useState();
@@ -31,14 +32,18 @@ const useNoSleep = () => {
 
 const Canvas = ({ player }) => {
   const forceRender = useForceRender();
-  const coordinatesRef = useRef([]);
-  const container = useRef(null);
+  const containerRef = useRef(null);
   const initializer = useRef(null);
   const [isInitialized, setInitialized] = useState(false);
   const [enableNoSleep] = useNoSleep();
   const [generate, setGenerate] = useState(false);
   const generationToggleButton = useRef(null);
   const alexBainterLink = useRef(null);
+  const canvasRef = useRef(null);
+  const circlesRef = useRef([]);
+  const [delay, setDelay] = useState(
+    Math.random() * MAX_EXTRA_DELAY_MS + MIN_DELAY_MS
+  );
 
   const toggleGeneration = () => {
     setGenerate(!generate);
@@ -46,12 +51,11 @@ const Canvas = ({ player }) => {
 
   useEffect(
     () => {
-      container.current.ontouchend = event.preventDefault();
-      let input$ = makeInputSource(container.current);
+      containerRef.current.ontouchend = event.preventDefault();
+      let input$ = makeInputSource(containerRef.current);
       if (generate) {
         input$ = merge(input$, generation$);
       }
-      const delay = Math.random() * MAX_EXTRA_DELAY_MS + MIN_DELAY_MS;
       const inputSubscription = input$
         .pipe(
           colored(),
@@ -63,9 +67,10 @@ const Canvas = ({ player }) => {
             enableNoSleep();
             setInitialized(true);
           }
-          coordinatesRef.current.push(
-            Object.assign({}, coordinate, { id: uuid(), delay })
+          circlesRef.current.push(
+            Object.assign({}, coordinate, { startedAtMS: Date.now() })
           );
+
           player(coordinate);
           forceRender();
         });
@@ -73,7 +78,7 @@ const Canvas = ({ player }) => {
         inputSubscription.unsubscribe();
       };
     },
-    [container, generate]
+    [containerRef, generate]
   );
 
   const handleButtonEvent = event => {
@@ -93,7 +98,7 @@ const Canvas = ({ player }) => {
     }
   });
 
-  const touchableRefs = [initializer, container];
+  const touchableRefs = [initializer, containerRef];
 
   useEffect(() => {
     touchableRefs.forEach(ref => {
@@ -105,60 +110,56 @@ const Canvas = ({ player }) => {
     });
   }, touchableRefs);
 
-  const removeCircle = ({ id }) => {
-    coordinatesRef.current.splice(
-      coordinatesRef.current.findIndex(c => c.id === id),
-      1
-    );
-    forceRender();
+  const drawFrame = () => {
+    const canvasEl = canvasRef.current;
+    const ctx = canvasEl.getContext('2d');
+    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    const frameTimeMS = Date.now();
+    circlesRef.current = circlesRef.current.filter(circle => {
+      const { xPct, yPct, color, startedAtMS, velocity } = circle;
+      const drawnForMS = frameTimeMS - startedAtMS;
+      const lifePct = drawnForMS / 6000;
+      if (lifePct <= 1) {
+        const radius = Math.round(lifePct * MAX_CIRCLE_RADIUS_PX);
+        const x = Math.round((xPct / 100) * canvasEl.clientWidth);
+        const y = Math.round((yPct / 100) * canvasEl.clientHeight);
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${(1 -
+          lifePct) *
+          velocity})`;
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fill();
+        return true;
+      }
+      return false;
+    });
+    window.requestAnimationFrame(drawFrame);
   };
-  const contents = isInitialized ? (
-    <div>
-      <TransitionGroup>
-        {coordinatesRef.current.map(c => (
-          <CSSTransition
-            timeout={{ enter: 7100, exit: 0 }}
-            onEntering={el =>
-              Object.assign(el.style, {
-                left: `calc(${c.xPct}% - 250px)`,
-                top: `calc(${c.yPct}% - 250px)`,
-                opacity: 0,
-              })
-            }
-            onEntered={() => removeCircle(c)}
-            classNames="circle"
-            key={c.id}
-          >
-            <Circle
-              xPct={c.xPct}
-              yPct={c.yPct}
-              opacity={c.velocity}
-              color={c.color}
-            />
-          </CSSTransition>
-        ))}
-      </TransitionGroup>
-      <button className="generation-toggle-btn" ref={generationToggleButton}>
-        <FontAwesomeIcon
-          icon={generate ? faStopCircle : faPlayCircle}
-          size="lg"
-        />
-      </button>
-      <a
-        href="https://alexbainter.com"
-        className="alex-bainter-link"
-        ref={alexBainterLink}
-      >
-        made by alex bainter
-      </a>
-    </div>
-  ) : (
-    <div className="initializer" ref={initializer}>
-      Press anywhere
-    </div>
-  );
+
+  const setCanvasDimensions = () => {
+    if (containerRef.current && canvasRef.current) {
+      canvasRef.current.height = containerRef.current.clientHeight;
+      canvasRef.current.width = containerRef.current.clientWidth;
+    }
+  };
+
+  useEffect(() => {
+    window.requestAnimationFrame(drawFrame);
+    window.addEventListener('resize', setCanvasDimensions);
+  }, []);
+
+  useEffect(setCanvasDimensions, [canvasRef, containerRef]);
+
+  const contents =
+    isInitialized || true ? (
+      <canvas height="100%" width="100%" className="canvas" ref={canvasRef} />
+    ) : (
+      <div className="initializer" ref={initializer}>
+        Press anywhere
+      </div>
+    );
   return (
-    <div className="canvas" ref={container}>
+    <div className="canvas-container" ref={containerRef}>
       {contents}
     </div>
   );

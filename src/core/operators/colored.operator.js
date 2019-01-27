@@ -1,6 +1,7 @@
 import { merge, of } from 'rxjs';
 import { debounceTime, map, withLatestFrom } from 'rxjs/operators';
 import materialColors from 'material-colors';
+import colorConvert from 'color-convert';
 import makeRandomLoopGenerator from '../../make-random-loop-generator';
 
 const bannedColors = ['white', 'black', 'yellow'];
@@ -11,7 +12,10 @@ const colorKeys = Reflect.ownKeys(materialColors).filter(
     bannedSuffixes.every(suffix => !name.endsWith(suffix))
 );
 
-const colors = colorKeys.map(key => materialColors[key][300]);
+const colors = colorKeys.map(key =>
+  colorConvert.hex.rgb(materialColors[key][300])
+);
+
 const COLOR_DEBOUNCE_TIME_MS = 3000;
 
 const colored = () => source => {

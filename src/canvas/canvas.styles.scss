@@ -6,9 +6,13 @@
   position: fixed;
 }
 
-.canvas {
+.canvas-container {
   height: 100%;
   text-align: center;
+}
+
+.canvas {
+  float: left;
 }
 
 .generation-toggle-btn {
