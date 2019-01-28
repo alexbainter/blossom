@@ -28,5 +28,6 @@ config.plugins.push(
 );
 
 config.mode = 'production';
+delete config.devtool;
 
 module.exports = config;
