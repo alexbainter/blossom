@@ -11,7 +11,7 @@ const DIST_DIR = 'dist';
 const S3_API_VERSION = '2006-03-01';
 const BUCKET_NAME = 'blossom.alexbainter.com';
 
-const NON_DIST_FILENAMES = []; //['favicon.ico'];
+const NON_DIST_FILENAMES = ['favicon.ico', 'manifest.json'];
 
 const globPromise = (pattern, opts) =>
   new Promise((resolve, reject) => {
@@ -52,11 +52,13 @@ const getContentType = (filename = '') => {
 
 const uploadDistItems = () =>
   Promise.all(
-    [`${DIST_DIR}/!(*.map)`, 'samples/**/*.+(ogg|mp3)'].map(pattern =>
-      globPromise(pattern)
+    [`${DIST_DIR}/!(*.map)`, 'samples/**/*.+(ogg|mp3)', 'icons/**/*.png'].map(
+      pattern => globPromise(pattern)
     )
   )
-    .then(([distFiles, sampleFiles]) => distFiles.concat(sampleFiles))
+    .then(fileGroups =>
+      fileGroups.reduce((allFiles, fileGroup) => allFiles.concat(fileGroup), [])
+    )
     .then(filenames => {
       if (filenames.length === 0) {
         console.log(`No files found in "${DIST_DIR}!"`);
