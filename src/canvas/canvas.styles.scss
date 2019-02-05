@@ -38,13 +38,10 @@
   user-select: none;
   text-decoration: none;
   font-family: 'Open Sans', sans-serif;
+  color: black;
 
   &:hover {
     opacity: 1;
-  }
-
-  &:visited {
-    color: inherit;
   }
 }
 
