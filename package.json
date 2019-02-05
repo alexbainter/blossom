@@ -21,6 +21,7 @@
     "aws-sdk": "^2.378.0",
     "babel-loader": "^8.0.4",
     "babel-polyfill": "^6.26.0",
+    "clean-webpack-plugin": "^1.0.1",
     "css-loader": "^1.0.1",
     "eslint": "^5.9.0",
     "eslint-config-metalex9": "^0.3.0",

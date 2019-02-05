@@ -3,6 +3,7 @@
 const glob = require('glob');
 const OfflinePlugin = require('offline-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 const samples = require('./src/samples.json');
 const makeConfig = require('./webpack.config');
 
@@ -23,6 +24,7 @@ const filenamesToCache = sampleFilenames
   .concat(otherFilenames);
 
 config.plugins.push(
+  new CleanWebpackPlugin(['dist']),
   new MiniCssExtractPlugin({ filename: '[name].[hash].css' }),
   new OfflinePlugin({
     appShell: '/',
