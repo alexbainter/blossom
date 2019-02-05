@@ -92,7 +92,8 @@ const uploadDistItems = () =>
               if (!filename.endsWith('.html')) {
                 uploadParams.CacheControl = 'max-age=31536000';
               }
-              s3.upload(uploadParams)
+              return s3
+                .upload(uploadParams)
                 .promise()
                 .then(() => {
                   completed += 1;
