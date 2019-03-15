@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import propTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import uuid from 'uuid';
 import NoSleep from 'nosleep.js';
@@ -17,8 +18,9 @@ const MIN_DELAY_MS = 7000;
 const MAX_EXTRA_DELAY_MS = 5000;
 
 const useForceRender = () => {
-  const [state, setState] = useState();
-  return () => setState(state);
+  //eslint-disable-next-line no-unused-vars
+  const [state, setState] = useState(true);
+  return () => setState(prevState => !prevState);
 };
 
 const useNoSleep = () => {
@@ -46,7 +48,7 @@ const Canvas = ({ player }) => {
 
   useEffect(
     () => {
-      container.current.ontouchend = event.preventDefault();
+      container.current.ontouchend = event => event.preventDefault();
       let input$ = makeInputSource(container.current);
       if (generate) {
         input$ = merge(input$, generation$);
@@ -160,6 +162,10 @@ const Canvas = ({ player }) => {
       {contents}
     </div>
   );
+};
+
+Canvas.propTypes = {
+  player: propTypes.func,
 };
 
 export default Canvas;
