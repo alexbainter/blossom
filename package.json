@@ -22,6 +22,7 @@
     "babel-loader": "^8.0.5",
     "babel-polyfill": "^6.26.0",
     "clean-webpack-plugin": "^1.0.1",
+    "cross-env": "^5.2.0",
     "css-loader": "^1.0.1",
     "eslint": "^5.15.1",
     "eslint-config-metalex9": "^0.3.0",
