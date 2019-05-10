@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Sound will work on iOS devices while they're in silent mode
 - Disable pinch to zoom on mobile devices
+- Font will display properly on all devices
 
 ### Added
 
