@@ -8,6 +8,8 @@ import './base-styles.scss';
 //eslint-disable-next-line
 if (process.env.NODE_ENV === 'production') {
   install();
+
+  console.log('https://github.com/generative-music/blossom');
 }
 
 render(<WithPlayer Component={Canvas} />, document.getElementById('root'));

@@ -17,7 +17,11 @@ const sampleFilenames = ['ogg', 'mp3'].reduce(
 
 const iconFilenames = glob.sync('icons/**/*.png');
 
-const otherFilenames = ['favicon.ico', 'manifest.json'];
+const otherFilenames = [
+  'favicon.ico',
+  'manifest.json',
+  'https://fonts.googleapis.com/css?family=Merriweather:300i',
+];
 
 const filenamesToCache = sampleFilenames
   .concat(iconFilenames)
