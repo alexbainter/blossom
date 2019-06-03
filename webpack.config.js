@@ -18,6 +18,11 @@ module.exports = ({ lastStyleLoader = 'style-loader' } = {}) => ({
         include: path.resolve('./src'),
         use: [lastStyleLoader, 'css-loader', 'postcss-loader', 'sass-loader'],
       },
+      {
+        test: /\.mp3$/,
+        include: path.resolve('./src'),
+        use: 'file-loader',
+      },
     ],
   },
   plugins: [new HtmlWebpackPlugin({ template: './src/index.template.html' })],

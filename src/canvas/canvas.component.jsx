@@ -17,6 +17,13 @@ import './canvas.styles.scss';
 const MIN_DELAY_MS = 7000;
 const MAX_EXTRA_DELAY_MS = 5000;
 
+// HACK ALERT
+function once() {
+  //eslint-disable-next-line no-func-assign
+  once = () => false;
+  return true;
+}
+
 const useForceRender = () => {
   //eslint-disable-next-line no-unused-vars
   const [state, setState] = useState(true);
@@ -46,37 +53,34 @@ const Canvas = ({ player }) => {
     setGenerate(!generate);
   };
 
-  useEffect(
-    () => {
-      container.current.ontouchend = event => event.preventDefault();
-      let input$ = makeInputSource(container.current);
-      if (generate) {
-        input$ = merge(input$, generation$);
-      }
-      const delay = Math.random() * MAX_EXTRA_DELAY_MS + MIN_DELAY_MS;
-      const inputSubscription = input$
-        .pipe(
-          colored(),
-          feedbackDelay(delay)
-        )
-        .subscribe(coordinate => {
-          if (!isInitialized) {
-            startAudioContext();
-            enableNoSleep();
-            setInitialized(true);
-          }
-          coordinatesRef.current.push(
-            Object.assign({}, coordinate, { id: uuid(), delay })
-          );
-          player(coordinate);
-          forceRender();
-        });
-      return () => {
-        inputSubscription.unsubscribe();
-      };
-    },
-    [container, generate]
-  );
+  useEffect(() => {
+    container.current.ontouchend = event => event.preventDefault();
+    let input$ = makeInputSource(container.current);
+    if (generate) {
+      input$ = merge(input$, generation$);
+    }
+    const delay = Math.random() * MAX_EXTRA_DELAY_MS + MIN_DELAY_MS;
+    const inputSubscription = input$
+      .pipe(
+        colored(),
+        feedbackDelay(delay)
+      )
+      .subscribe(coordinate => {
+        if (once()) {
+          startAudioContext();
+          enableNoSleep();
+          setInitialized(true);
+        }
+        coordinatesRef.current.push(
+          Object.assign({}, coordinate, { id: uuid(), delay })
+        );
+        player(coordinate);
+        forceRender();
+      });
+    return () => {
+      inputSubscription.unsubscribe();
+    };
+  }, [container, generate]);
 
   const handleButtonEvent = event => {
     event.stopPropagation();
