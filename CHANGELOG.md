@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 (none)
 
+## [0.2.1] - 06-02-2019
+
+### Fixed
+
+- No more crackly audio on iOS devices
+
 ## [0.2.0] - 05-09-2019
 
 ### Fixed
