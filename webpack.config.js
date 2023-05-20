@@ -6,9 +6,14 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = ({ lastStyleLoader = 'style-loader' } = {}) => ({
   mode: 'development',
   entry: ['babel-polyfill', './src/index.jsx'],
-  devtool: 'sourcemap',
+  devtool: 'source-map',
   output: {
     filename: '[name].[hash].js',
+  },
+  devServer: {
+    static: {
+      directory: __dirname,
+    },
   },
   module: {
     rules: [
